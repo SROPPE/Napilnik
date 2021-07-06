@@ -5,6 +5,15 @@ public class Clip
 {
     public Clip(int volume, int maxVolume)
     {
+        if (volume < 0)
+            throw new ArgumentException("Volume cannot be less than zero.");
+
+        if (maxVolume < 0)
+            throw new ArgumentException("Max Volume cannot be less than zero.");
+
+        if (volume > maxVolume)
+            throw new ArgumentException("Max Volume cannot be less than current volume.");
+
         Volume = volume;
         MaxVolume = maxVolume;
     }
