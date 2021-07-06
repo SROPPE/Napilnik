@@ -9,10 +9,6 @@ public class Clip
         MaxVolume = maxVolume;
     }
 
-    public event Action Empty;
-
-    public event Action BulletGiven;
-
     public int Volume { get; private set; }
 
     public int MaxVolume { get; }
@@ -21,22 +17,11 @@ public class Clip
 
     private bool HasBullets => Volume > 0;
 
-    public bool TryPickupBullet()
+    public void TakeBullet()
     {
-        if(HasBullets)
-        {
-            Volume--;
-
-            BulletGiven?.Invoke();
-
-            if (HasBullets == false)
-                Empty?.Invoke();
-
-            return true;
-        }
-
-        Empty?.Invoke();
-
-        return false;
+        if (IsEmpty)
+            throw new InvalidOperationException("No bullets in the clip.");
+     
+        Volume--;
     }
 }

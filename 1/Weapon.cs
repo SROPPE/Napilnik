@@ -8,39 +8,39 @@ public class Weapon
 
     public event Action NeedReload;
 
-    public Weapon(Damage damage)
+    public Weapon(Clip clip, Damage damage)
     {
         _damage = damage;
+        SetClip(clip);
     }
 
     public void Reload(Clip clip)
     {
-        if(_clip != null)
-            _clip.Empty -= OnMagEmpty;
-
-        _clip = clip;
-        _clip.Empty += OnMagEmpty;
+        SetClip(clip);
 
         if (_clip.IsEmpty)
-            OnMagEmpty();
+            NeedReload?.Invoke();
+    }
+
+    private void SetClip(Clip clip)
+    {
+        _clip = clip ?? throw new NullReferenceException("Clip cannot be null.");
     }
 
     public bool TryFire(IDamageable target)
     {
-        if (_clip == null)
-            return false;
-
-        if (_clip.TryPickupBullet())
+        try
         {
+            _clip.TakeBullet();
             target.TakeDamage(_damage);
+
             return true;
         }
+        catch (Exception)
+        {
+            NeedReload?.Invoke();
 
-        return false;
-    }
-
-    private void OnMagEmpty()
-    {
-        NeedReload?.Invoke();
+            return false;         
+        }
     }
 }
