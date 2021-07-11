@@ -1,8 +1,13 @@
-﻿
-using System;
+﻿using System;
 
 public class Clip
 {
+    public int Volume { get; private set; }
+    public int MaxVolume { get; }
+
+    public bool IsEmpty => HasBullets == false;
+    private bool HasBullets => Volume > 0;
+
     public Clip(int volume, int maxVolume)
     {
         if (volume < 0)
@@ -17,14 +22,6 @@ public class Clip
         Volume = volume;
         MaxVolume = maxVolume;
     }
-
-    public int Volume { get; private set; }
-
-    public int MaxVolume { get; }
-
-    public bool IsEmpty => HasBullets == false;
-
-    private bool HasBullets => Volume > 0;
 
     public void TakeBullet()
     {

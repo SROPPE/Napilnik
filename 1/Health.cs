@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 
 public class Health : IDamageable
 {
@@ -15,9 +14,12 @@ public class Health : IDamageable
 
     public void TakeDamage(Damage damage)
     {
-        Amount -= damage.Value;
-        
-        if (Amount < 0)
+        if (Amount - damage.Value < 0)
+        {      
             Amount = 0;
+            return;
+        }
+
+        Amount -= damage.Value;
     }
 }
