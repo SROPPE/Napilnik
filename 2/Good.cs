@@ -14,5 +14,4 @@ namespace Homework2
             Name = name;   
         }
     }
-
 }

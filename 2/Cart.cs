@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Homework2
 {
@@ -10,6 +9,8 @@ namespace Homework2
 
         private List<GoodPortion> _reservedGoods = new List<GoodPortion>();
 
+        public IReadOnlyList<GoodPortion> ReservedGoods => _reservedGoods;
+
         public Cart(Shop shop)
         {
             _shop = shop ?? throw new ArgumentNullException(nameof(shop));
@@ -17,39 +18,21 @@ namespace Homework2
 
         public void Add(Good good, int count)
         {
-            var goodPortion = new GoodPortion(good, count);
-
-            try
-            {
-                _shop.Reserve(goodPortion);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return;
-            }
+            var portion = new GoodPortion(good, count);
+          
+            _shop.Reserve(portion);
             
-            var index = _reservedGoods.FindIndex((request) => request.Good.Name == good.Name);
+            var index = _reservedGoods.FindIndex((goodPortion) => goodPortion.ContainsSameGood(goodPortion));
 
             if (index == -1)
-                _reservedGoods.Add(goodPortion);
+                _reservedGoods.Add(portion);
             else
-                _reservedGoods[index] = _reservedGoods[index].Merge(goodPortion);
+                _reservedGoods[index] = _reservedGoods[index].Merge(portion);
         }
 
         public Order Order()
         {
             return new Order(this);
         }
-
-        public override string ToString()
-        {
-            var stringBuilder = new StringBuilder();
-
-            _reservedGoods.ForEach(reserved => stringBuilder.AppendLine(reserved.ToString()));
-
-            return stringBuilder.ToString();
-        }
     }
-
 }

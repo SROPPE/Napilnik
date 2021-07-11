@@ -1,56 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Homework2
 {
     class Warehouse
     {
-        private List<GoodContainer> _goods = new List<GoodContainer>();
+        private List<GoodPortion> _goods = new List<GoodPortion>();
+
+        public IReadOnlyList<GoodPortion> Goods => _goods;
 
         public void Delive(GoodPortion portion)
         {
-            var good = portion.Good;
-            var amount = portion.Amount;
+            var index = _goods.FindIndex((goodPortion) => goodPortion.ContainsSameGood(portion));
 
-            var containedGood = _goods.Find(item => item.Good.Name == good.Name);
-
-            if (containedGood == null)
-                _goods.Add(new GoodContainer(good, amount));
+            if (index == -1)
+                _goods.Add(portion);
             else
-                containedGood.Add(amount);
+            {
+                var containedPortion = _goods[index];
+                _goods[index] = containedPortion.Merge(portion);
+            }
         }
 
-        public bool HasGood(GoodPortion portion)
-        {
-            var good = portion.Good;
-            var amount = portion.Amount;
-
-            return _goods.Any(contained => contained.Good.Name == good.Name && contained.Amount >= amount);
-        }
+        public bool HasGood(GoodPortion portion) =>
+            _goods.Any(goodPortion => goodPortion.ContainsSameGood(portion) && goodPortion.HasAmount(portion.Amount));
 
         public void PickupGood(GoodPortion portion)
         {
-            var good = portion.Good;
-            var amount = portion.Amount;
+            var index = _goods.FindIndex((goodPortion) => goodPortion.ContainsSameGood(portion));
 
-            var containedGood = _goods.Find(item => item.Good.Name == good.Name);
-
-            if (containedGood == null)
+            if (index == -1)
                 throw new ArgumentException("No such good contained.");
 
-            containedGood.Reduce(amount);
-        }
+            var containedPortion = _goods[index];
 
-        public override string ToString()
-        {
-            var stringBuilder = new StringBuilder();
-
-             _goods.ForEach(good => stringBuilder.AppendLine(good.ToString()));
-
-            return stringBuilder.ToString();
+            try
+            {         
+                _goods[index] = containedPortion.Reduce(portion);
+            }
+            catch 
+            {
+                _goods.RemoveAt(index);
+            }
         }
     } 
-
 }

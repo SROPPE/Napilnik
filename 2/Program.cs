@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Homework2
 {
@@ -7,29 +9,53 @@ namespace Homework2
     {
         static void Main(string[] args)
         {
-            Good iPhone12 = new Good("IPhone 12");
-            Good iPhone11 = new Good("IPhone 11");
+            var iPhone12 = new Good("IPhone 12");
+            var iPhone11 = new Good("IPhone 11");
 
-            Warehouse warehouse = new Warehouse();
+            var warehouse = new Warehouse();
 
-            Shop shop = new Shop(warehouse);
+            var shop = new Shop(warehouse);
 
             warehouse.Delive(new GoodPortion(iPhone12, 10));
             warehouse.Delive(new GoodPortion(iPhone11, 1));
 
-            Console.WriteLine(warehouse.ToString());
+            DisplayGoodsPortions(warehouse.Goods);
 
             Cart cart = shop.Cart();
 
-          
-            cart.Add(iPhone12, 4);
-            cart.Add(iPhone11, 3);
-            
+            try
+            {
+                cart.Add(iPhone12, 4);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
-            Console.WriteLine(cart.ToString());
+            try
+            {
+                cart.Add(iPhone11, 3);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            DisplayGoodsPortions(cart.ReservedGoods);
 
             Console.WriteLine(cart.Order().Paylink);
         }
-    }
 
+        static private void DisplayGoodsPortions(IReadOnlyList<GoodPortion> portions)
+        {
+            var stringBuilder = new StringBuilder();
+         
+            foreach (var portion in portions)
+            {
+                stringBuilder.AppendLine($"Name: {portion.Good.Name} Amount: {portion.Amount}");
+            }
+
+            Console.WriteLine(stringBuilder.ToString());
+        }
+    }
 }

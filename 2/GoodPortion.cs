@@ -5,7 +5,6 @@ namespace Homework2
     struct GoodPortion
     {
         public Good Good { get; }
-
         public int Amount { get; private set; }
 
         public GoodPortion(Good good, int amount)
@@ -19,18 +18,24 @@ namespace Homework2
 
         public GoodPortion Merge(GoodPortion portion)
         {
-            if (portion.Good.Name != Good.Name)
+            if (!ContainsSameGood(portion))
                 throw new ArgumentException("Cannot merge different goods.");
           
             return new GoodPortion(Good, Amount + portion.Amount); 
         }
 
-        public override string ToString()
+        public GoodPortion Reduce(GoodPortion portion)
         {
-            var result = $"Name: {Good.Name} Count: {Amount}";
-            return result;
+            if (!ContainsSameGood(portion))
+                throw new ArgumentException("Cannot reduce different goods.");
+
+            return new GoodPortion(Good, Amount - portion.Amount);
         }
 
-    }
+        public bool HasAmount(int amount) =>
+            Amount >= amount;
 
+        public bool ContainsSameGood(GoodPortion other) => 
+            other.Good.Name == Good.Name;
+    }
 }
